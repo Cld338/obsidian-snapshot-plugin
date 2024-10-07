@@ -81,10 +81,10 @@ export class SnapshotPanelView extends ItemView {
             title.addEventListener('click', async () => {
                 if (contentContainer.style.display === 'none') {
                     const fileContent = await this.app.vault.adapter.read(snapshotFile);
-            
+    
                     // 기존 내용을 마크다운 형식으로 렌더링
                     contentContainer.empty(); // 기존 컨텐츠를 비움
-            
+    
                     // "Open in New Tab" 링크 추가
                     const openInNewTabLink = contentContainer.createEl('span', { text: 'Open in New Tab' });
                     openInNewTabLink.style.display = 'block';
@@ -92,28 +92,28 @@ export class SnapshotPanelView extends ItemView {
                     openInNewTabLink.style.cursor = 'pointer';
                     openInNewTabLink.style.fontWeight = 'bold'; // 볼드체
                     openInNewTabLink.style.textDecoration = 'underline'; // 밑줄
-            
+    
                     // 새 탭에서 열기 기능 구현
                     openInNewTabLink.addEventListener('click', async () => {
                         const newLeaf = this.app.workspace.getLeaf(true); // 새 편집기 탭 생성
                         const file = this.app.vault.getAbstractFileByPath(snapshotFile);
-            
+    
                         if (file instanceof TFile) {
                             await newLeaf.openFile(file); // 새 편집기 탭에서 파일 열기
                         }
                     });
-            
+    
                     await MarkdownRenderer.renderMarkdown(
                         fileContent, // 렌더링할 마크다운 내용
                         contentContainer, // 렌더링할 컨테이너
                         snapshotFile, // 스냅샷 파일 경로
                         this // 뷰어 컨텍스트
                     );
-            
+    
                     // 테마 색상을 적용
                     const computedStyle = getComputedStyle(document.body);
                     contentContainer.style.backgroundColor = computedStyle.getPropertyValue('--background-primary').trim();
-            
+    
                     contentContainer.style.display = 'block';
                 } else {
                     contentContainer.style.display = 'none';
@@ -122,11 +122,19 @@ export class SnapshotPanelView extends ItemView {
         });
     }
     
+    
 
     async getSnapshotFilesForFile(file: TFile): Promise<string[]> {
-        const originalPath = file.parent!.path;
-        const fileNameWithoutExtension = file.name.replace('.md', ''); // 원본 파일명 폴더 추가
-        const snapshotFolder = `${this.plugin.settings.snapshotFolder}/${originalPath}/${fileNameWithoutExtension}`;
+        const snapshotFolderBase = this.plugin.settings.snapshotFolder;
+        const fileNameWithoutExtension = file.name.replace('.md', '');
+    
+        const originalPath = file.parent ? file.parent.path : '';
+    
+        // 루트 디렉토리 파일을 처리하는 경로 계산
+        const snapshotFolder = originalPath 
+            ? `${snapshotFolderBase}/${originalPath}/${fileNameWithoutExtension}`
+            : `${snapshotFolderBase}/${fileNameWithoutExtension}`;
+    
         const snapshotFiles: string[] = [];
     
         // 스냅샷 폴더가 있는지 확인
@@ -137,6 +145,7 @@ export class SnapshotPanelView extends ItemView {
     
         return snapshotFiles;
     }
+    
     
     async onClose() {
         // 패널이 닫힐 때 필요한 정리 작업

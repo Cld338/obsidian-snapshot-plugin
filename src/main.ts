@@ -63,18 +63,23 @@ export default class MyPlugin extends Plugin {
             return;
         }
     
-        const originalPath = activeFile.parent!.path;
         const snapshotFolderBase = this.settings.snapshotFolder;
-        
-        // 원본 파일 이름을 사용하여 새로운 폴더 경로 구성
         const fileNameWithoutExtension = activeFile.name.replace('.md', '');
-        const snapshotFolder = `${snapshotFolderBase}/${originalPath}/${fileNameWithoutExtension}`;
+    
+        // 원본 파일 경로가 없으면 루트 디렉토리로 처리
+        const originalPath = activeFile.parent ? activeFile.parent.path : '';
+    
+        // 루트 디렉토리와 비루트 디렉토리의 경로를 각각 처리
+        console.log(originalPath);
+        let snapshotFolder = ((originalPath.length) > 1)
+            ? `${snapshotFolderBase}/${originalPath}/${fileNameWithoutExtension}`
+            : `${snapshotFolderBase}/${fileNameWithoutExtension}`;
     
         const timestamp = new Date().toISOString().replace(/[:.-]/g, "");
         const snapshotFileName = `${timestamp}.md`;
     
         const content = await this.app.vault.read(activeFile);
-        
+    
         // 스냅샷 폴더가 존재하지 않으면 생성
         if (!(await this.app.vault.adapter.exists(snapshotFolder))) {
             await this.app.vault.adapter.mkdir(snapshotFolder);
@@ -83,7 +88,7 @@ export default class MyPlugin extends Plugin {
         const snapshotFilePath = `${snapshotFolder}/${snapshotFileName}`;
         await this.app.vault.create(snapshotFilePath, content);
         new Notice(`Snapshot saved: ${snapshotFilePath}`);
-        
+    
         // 스냅샷 패널이 열려 있으면 업데이트
         const leaf = this.app.workspace.getLeavesOfType('snapshot-view')[0];
         if (leaf) {
@@ -105,7 +110,7 @@ export default class MyPlugin extends Plugin {
 
     async updateSnapshotPanel() {
         const leaves = this.app.workspace.getLeavesOfType('snapshot-view');
-        if (leaves.length > 0) {
+        if (leaves.length > 1) {
             const leaf = leaves[0];
             const view = leaf.view as SnapshotPanelView;
             if (view) {
@@ -113,6 +118,7 @@ export default class MyPlugin extends Plugin {
             }
         }
     }
+    
 
     onunload() {
         this.app.workspace.getLeavesOfType('snapshot-view').forEach(leaf => leaf.detach());
