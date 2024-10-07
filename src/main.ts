@@ -78,6 +78,11 @@ export default class MyPlugin extends Plugin {
         const snapshotFilePath = `${snapshotFolder}/${snapshotFileName}`;
         await this.app.vault.create(snapshotFilePath, content);
         new Notice(`Snapshot saved: ${snapshotFilePath}`);
+        const leaf = this.app.workspace.getLeavesOfType('snapshot-view')[0];
+        if (leaf) {
+            const view = leaf.view as SnapshotPanelView;
+            view.updateSnapshots();  // 스냅샷 패널 업데이트
+        }
     }
 
     async activateSnapshotView() {
