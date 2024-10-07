@@ -1,96 +1,55 @@
-# Obsidian Sample Plugin
+# Snapshot Plugin
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+Snapshot Plugin은 Obsidian 내에서 파일의 스냅샷을 관리하기 위한 플러그인입니다. 
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+## 기능
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+- 현재 열린 파일의 스냅샷 생성 및 관리
+- 스냅샷 문서 마크다운 형식으로 렌더링
+- 마크다운 문서에 "새 탭에서 열기" 옵션 추가
+- 드래그 가능한 마크다운 텍스트
+- 테마에 맞춘 자동 색상 적용
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+## 설치
 
-## First time developing plugins?
+### 1. 수동 설치
 
-Quick starting guide for new plugin devs:
+1. 이 GitHub 저장소에서 플러그인의 최신 릴리스를 다운로드합니다.
+2. Obsidian에서 설정(Settings) -> 플러그인(Community plugins) -> 플러그인 폴더 열기(Open plugins folder)로 이동합니다.
+3. 다운로드한 플러그인 파일들을 플러그인 폴더에 복사합니다.
+4. Obsidian으로 돌아가 플러그인 탭에서 플러그인을 활성화합니다.
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+## 사용법
 
-## Releasing new releases
+### 1. 스냅샷 생성
+- 현재 활성화된 파일에 대해 스냅샷을 생성하려면 플러그인에서 제공하는 명령어 'Save Snapshot'을 실행하세요.
+- 스냅샷은 자동으로 설정된 폴더에 저장됩니다.
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+### 2. 스냅샷 보기 및 열기
+- 플러그인은 스냅샷을 열 때 마크다운 형식으로 내용을 렌더링합니다.
+- 렌더링된 스냅샷 상단에 "Open in New Tab" 링크가 제공됩니다. 이를 클릭하면 스냅샷이 새로운 편집기 탭에서 열립니다.
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+### 3. 마크다운 텍스트 드래그
+- 스냅샷 문서 내에서 텍스트는 드래그 앤 드롭이 가능합니다. 텍스트를 드래그하여 다른 위치로 쉽게 옮길 수 있습니다.
 
-## Adding your plugin to the community plugin list
+## 설정
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+플러그인은 설정에서 스냅샷이 저장될 폴더를 지정할 수 있습니다. 기본적으로 `Snapshots`라는 폴더에 스냅샷이 저장됩니다.
 
-## How to use
+### 설정 방법:
+1. Obsidian 설정(Settings) -> 플러그인(Plugin settings)으로 이동합니다.
+2. 'Snapshot Folder'에서 스냅샷이 저장될 폴더 경로를 지정합니다.
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+## 기여
 
-## Manually installing the plugin
+이 플러그인에 대한 기여는 언제나 환영입니다. 버그 리포트, 피드백, 코드 기여 등을 포함한 모든 기여는 GitHub 저장소에서 이뤄집니다.
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+### 기여 방법:
+1. 저장소를 포크합니다.
+2. 새로운 기능 또는 버그 수정을 추가합니다.
+3. 변경사항을 커밋하고 푸시합니다.
+4. 풀 리퀘스트를 생성합니다.
 
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
+## 라이선스
 
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
-```
-
-If you have multiple URLs, you can also do:
-
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
-```
-
-## API Documentation
-
-See https://github.com/obsidianmd/obsidian-api
+이 플러그인은 MIT 라이선스 하에 배포됩니다. 자세한 내용은 `LICENSE` 파일을 참조하세요.
