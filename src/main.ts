@@ -62,28 +62,37 @@ export default class MyPlugin extends Plugin {
             new Notice("No active file to snapshot");
             return;
         }
-
+    
         const originalPath = activeFile.parent!.path;
         const snapshotFolderBase = this.settings.snapshotFolder;
-        const snapshotFolder = `${snapshotFolderBase}/${originalPath}`;
+        
+        // 원본 파일 이름을 사용하여 새로운 폴더 경로 구성
+        const fileNameWithoutExtension = activeFile.name.replace('.md', '');
+        const snapshotFolder = `${snapshotFolderBase}/${originalPath}/${fileNameWithoutExtension}`;
+    
         const timestamp = new Date().toISOString().replace(/[:.-]/g, "");
-        const snapshotFileName = `${activeFile.name.replace('.md', '')}-${timestamp}.md`;
-
+        const snapshotFileName = `${timestamp}.md`;
+    
         const content = await this.app.vault.read(activeFile);
-
+        
+        // 스냅샷 폴더가 존재하지 않으면 생성
         if (!(await this.app.vault.adapter.exists(snapshotFolder))) {
             await this.app.vault.adapter.mkdir(snapshotFolder);
         }
-
+    
         const snapshotFilePath = `${snapshotFolder}/${snapshotFileName}`;
         await this.app.vault.create(snapshotFilePath, content);
         new Notice(`Snapshot saved: ${snapshotFilePath}`);
+        
+        // 스냅샷 패널이 열려 있으면 업데이트
         const leaf = this.app.workspace.getLeavesOfType('snapshot-view')[0];
         if (leaf) {
             const view = leaf.view as SnapshotPanelView;
             view.updateSnapshots();  // 스냅샷 패널 업데이트
         }
     }
+    
+    
 
     async activateSnapshotView() {
         const leaf = this.app.workspace.getRightLeaf(false);

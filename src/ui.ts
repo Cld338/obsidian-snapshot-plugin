@@ -47,37 +47,37 @@ export class SnapshotPanelView extends ItemView {
     async updateSnapshots() {
         const container = this.containerEl;
         container.empty(); // 기존의 스냅샷 목록을 비움
-
+    
         const activeFile = this.app.workspace.getActiveFile();
         if (!activeFile) {
             container.createEl('p', { text: 'No file selected.' });
             return;
         }
-
+    
         const snapshots = await this.getSnapshotFilesForFile(activeFile);
-
+    
         if (snapshots.length === 0) {
             container.createEl('p', { text: `No snapshots found for ${activeFile.name}` });
             return;
         }
-
+    
         container.createEl('h3', { text: `Snapshots for ${activeFile.name}` });
-
+    
         snapshots.forEach(snapshotFile => {
             const snapshotContainer = container.createEl('div', { cls: 'snapshot-item' });
-
+    
             // 스냅샷 파일 이름 표시
             const title = snapshotContainer.createEl('div', {
                 text: snapshotFile.split('/').pop(), // 파일 이름만 표시
                 cls: 'snapshot-title'
             });
-
+    
             // 스냅샷 파일의 내용 렌더링할 영역
             const contentContainer = snapshotContainer.createEl('div', {
                 cls: 'snapshot-content',
                 attr: { style: 'display: none;' }
             });
-
+    
             title.addEventListener('click', async () => {
                 if (contentContainer.style.display === 'none') {
                     const fileContent = await this.app.vault.adapter.read(snapshotFile);
@@ -103,7 +103,6 @@ export class SnapshotPanelView extends ItemView {
                         }
                     });
             
-            
                     await MarkdownRenderer.renderMarkdown(
                         fileContent, // 렌더링할 마크다운 내용
                         contentContainer, // 렌더링할 컨테이너
@@ -120,25 +119,25 @@ export class SnapshotPanelView extends ItemView {
                     contentContainer.style.display = 'none';
                 }
             });
-            
-            
         });
     }
+    
 
     async getSnapshotFilesForFile(file: TFile): Promise<string[]> {
-        const originalPath = file.parent!.path; // 원본 파일 경로
-        const snapshotFolder = `${this.plugin.settings.snapshotFolder}/${originalPath}`; // 스냅샷 폴더 경로
+        const originalPath = file.parent!.path;
+        const fileNameWithoutExtension = file.name.replace('.md', ''); // 원본 파일명 폴더 추가
+        const snapshotFolder = `${this.plugin.settings.snapshotFolder}/${originalPath}/${fileNameWithoutExtension}`;
         const snapshotFiles: string[] = [];
-
+    
         // 스냅샷 폴더가 있는지 확인
         if (await this.app.vault.adapter.exists(snapshotFolder)) {
             const files = await this.app.vault.adapter.list(snapshotFolder);
             snapshotFiles.push(...files.files); // 폴더 내 모든 파일을 배열에 추가
         }
-
+    
         return snapshotFiles;
     }
-
+    
     async onClose() {
         // 패널이 닫힐 때 필요한 정리 작업
     }
